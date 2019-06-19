@@ -1,0 +1,35 @@
+version: '3.5'
+
+volumes:
+  database_data:
+    driver: local
+
+networks:
+  app:
+      driver: bridge
+
+services:
+
+  postgres:
+    container_name: postgres
+    image: "postgres:latest"
+    ports:
+      - "5432:5432"
+    environment:
+      - POSTGRES_DB=sesame-appointments
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=postgres
+    volumes:
+      - database_data:/var/lib/postgresql/data
+    networks:
+      - app
+
+  appointment-api:
+    container_name: appointment-scheduler
+    image: "brn-sesame/appointment:latest"
+    ports:
+      - 9090:9090
+    networks:
+      - app
+    depends_on:
+      - postgres

@@ -1,0 +1,83 @@
+plugins {
+    id 'com.bmuschko.docker-remote-api' version '3.2.5'
+    id 'org.springframework.boot' version '2.1.5.RELEASE'
+    id 'java'
+}
+
+apply plugin: 'io.spring.dependency-management'
+
+group = 'com.sesame'
+version = '0.0.1-SNAPSHOT'
+sourceCompatibility = '1.8'
+
+repositories {
+    mavenCentral()
+    jcenter()
+}
+
+
+bootJar {
+    baseName = 'appointments-api'
+    version = 'v1.0.0'
+    mainClassName = "com.sesame.appointmentscheduler.AppointmentSchedulerApplication"
+}
+
+
+test {
+    useJUnitPlatform()
+}
+
+dependencies {
+    implementation 'org.springframework.boot:spring-boot-starter-actuator'
+    implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
+    implementation 'org.springframework.boot:spring-boot-starter-web'
+    testImplementation 'org.junit.jupiter:junit-jupiter-api:5.4.2'
+    testRuntimeOnly 'org.junit.jupiter:junit-jupiter-engine:5.4.2'
+    compile 'org.junit.platform:junit-platform-commons:1.4.2'
+    runtimeOnly 'org.postgresql:postgresql'
+    testImplementation 'org.springframework.boot:spring-boot-starter-test'
+    compile 'org.testcontainers:postgresql:1.11.3'
+    compileOnly 'org.projectlombok:lombok'
+    annotationProcessor 'org.projectlombok:lombok'
+    runtime("io.micrometer:micrometer-registry-prometheus")
+    compile group: 'io.springfox', name: 'springfox-swagger2', version: '2.9.2'
+    compile group: 'io.springfox', name: 'springfox-swagger-ui', version: '2.9.2'
+}
+
+
+import com.bmuschko.gradle.docker.tasks.image.DockerBuildImage
+import com.bmuschko.gradle.docker.tasks.image.Dockerfile
+
+task createDockerfile(type: Dockerfile) {
+    destFile = project.file('build/docker/Dockerfile')
+    from 'openjdk:8u171-jre-slim'
+    maintainer 'Bruno Rossi "brnbrossi@gmail.com"'
+    copyFile bootJar.archiveName, '/app/appointments-api.jar'
+    defaultCommand '-jar', '/app/appointments-api.jar'
+    exposePort 9090
+    entryPoint 'java', '-Djava.security.egd=file:/dev/./urandom', "-Dspring.profiles.active=container"
+    environmentVariable('JAVA_OPTS',
+        ' " -XX:+UnlockExperimentalVMOptions ' +
+            '-XX:+UseCGroupMemoryLimitForHeap ' +
+            '-XX:MaxRAMFraction=1 ' +
+            '-XX:MinHeapFreeRatio=20 ' +
+            '-XX:MaxHeapFreeRatio=40 ' +
+            '-XX:+CMSScavengeBeforeRemark ' +
+            '-XX:+ScavengeBeforeFullGC ' +
+            '-XX:+OptimizeStringConcat " ')
+}
+
+task syncWebAppArchive(type: Sync) {
+    dependsOn test
+    dependsOn bootJar
+    from bootJar.archivePath
+    into createDockerfile.destFile.parentFile
+}
+
+createDockerfile.dependsOn syncWebAppArchive
+
+task buildImage(type: DockerBuildImage) {
+    dependsOn createDockerfile
+    inputDir = createDockerfile.destFile.parentFile
+    tags = ["brn-sesame/appointment:latest".toString()] as Set<String>
+}

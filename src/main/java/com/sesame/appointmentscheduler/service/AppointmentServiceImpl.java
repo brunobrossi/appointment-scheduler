@@ -1,6 +1,6 @@
 package com.sesame.appointmentscheduler.service;
 
-import com.sesame.appointmentscheduler.Repository.AppointmentRepository;
+import com.sesame.appointmentscheduler.repository.AppointmentRepository;
 import com.sesame.appointmentscheduler.entity.Appointment;
 import java.time.LocalDate;
 import java.time.LocalTime;

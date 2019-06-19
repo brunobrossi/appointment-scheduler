@@ -1,4 +1,4 @@
-package com.sesame.appointmentscheduler.Repository;
+package com.sesame.appointmentscheduler.repository;
 
 import com.sesame.appointmentscheduler.entity.Appointment;
 import java.time.LocalDateTime;

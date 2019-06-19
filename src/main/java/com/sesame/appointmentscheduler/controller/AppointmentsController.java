@@ -35,6 +35,9 @@ public class AppointmentsController {
 
     private final AppointmentService appointmentService;
 
+    /*
+        Creates new appointment in the system
+     */
     @PostMapping
     @Timed
     public ResponseEntity create(@Valid @RequestBody Appointment appointment) {
@@ -43,6 +46,9 @@ public class AppointmentsController {
         return ResponseEntity.ok(appointmentService.save(appointment));
     }
 
+    /*
+        Search for appointments by ID
+     */
     @GetMapping("/{id}")
     @Timed
     public ResponseEntity<Appointment> findById(@PathVariable Long id) {
@@ -52,6 +58,9 @@ public class AppointmentsController {
             .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Appointment was not found!"));
     }
 
+    /*
+        Updated appointments status
+     */
     @PutMapping("/{id}")
     @Timed
     public ResponseEntity<Appointment> update(@PathVariable Long id, @RequestBody Appointment appointment) {
@@ -64,6 +73,9 @@ public class AppointmentsController {
             }).orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Appointment was not found!"));
     }
 
+    /*
+        Delete appointments by ID
+     */
     @DeleteMapping("/{id}")
     @Timed
     public ResponseEntity delete(@PathVariable Long id) {
@@ -76,6 +88,9 @@ public class AppointmentsController {
             .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Appointment was not found!"));
     }
 
+    /*
+        Search for within a date range and sorts them by price
+     */
     @GetMapping("/search")
     @Timed
     public ResponseEntity<List<Appointment>> findByDateBetween(

@@ -51,8 +51,10 @@ And run the project normally.
 
 ## Using the project
 
-The are endpoint for each type action.
+You can also checkout Swagger: ``Swagger -> http://localhost:9090/swagger-ui.html#/``
 
+The are endpoint for each type action.
+``
 
  Create a new Appointment: 
      
@@ -104,6 +106,7 @@ The are endpoint for each type action.
  
  Also a task will be generating Random appointments at random intervals
  
+ 
 ## Perks
 
   The project when running expose some endpoints for Documentation and Monitoring
@@ -114,9 +117,6 @@ The are endpoint for each type action.
    
    ``Prometheus -> /actuator/prometheus`` 
    Prometheus is monitoring the time on every request on the endpoints, check it out!
-   
-   
-   ``Swagger -> /swagger-ui.html#/`` 
    
    
 ## Next Steps
